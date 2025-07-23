@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors');
+const cors = require('cors'); // Make sure cors is installed (npm install cors)
 const mongoose = require('mongoose'); // For MongoDB interaction
 const nodemailer = require('nodemailer'); // For sending emails
 require('dotenv').config(); // Load environment variables
@@ -10,7 +10,12 @@ const port = process.env.PORT || 5000;
 
 // Middleware
 app.use(bodyParser.json());
-app.use(cors()); // Allow requests from your frontend
+
+// --- CORS Configuration ---
+// Configure CORS to specifically allow requests from your Vercel frontend URL
+app.use(cors({
+    origin: "https://sandipshub.vercel.app" // IMPORTANT: Replace with your actual Vercel frontend URL
+}));
 
 // --- MongoDB Connection ---
 mongoose.connect(process.env.MONGO_URI)
@@ -32,7 +37,7 @@ let transporter = nodemailer.createTransport({
     service: 'gmail', // Or 'smtp' for other providers
     auth: {
         user: process.env.EMAIL_USER, // Your sending email address
-        pass: process.env.EMAIL_PASS  // Your app password or email password
+        pass: process.env.EMAIL_PASS // Your app password or email password
     }
 });
 
@@ -68,8 +73,7 @@ app.post('/api/contact', async (req, res) => {
                 <p>In the meantime, feel free to explore more of my projects and services on my website.</p>
                 <p>Best regards,</p>
                 <p>Sandip Sarkar</p>
-                <p><a href="YOUR_WEBSITE_URL_HERE">My Portfolio</a></p>
-            `
+                <p><a href="https://sandipshub.vercel.app">My Portfolio</a></p> `
         };
         await transporter.sendMail(clientMailOptions);
         console.log('Welcome email sent to client.');
